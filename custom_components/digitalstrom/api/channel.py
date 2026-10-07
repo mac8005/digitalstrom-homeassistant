@@ -93,6 +93,18 @@ class DigitalstromMeterSensorChannel(DigitalstromChannel):
     async def get_value(self) -> float:
         if not self.device.has_metering:
             return None
+        if not self.device.has_metering_producer and self.index in ["power", "energy"]:
+            series = "consumption" if self.index == "power" else "energy"
+            data = await self.device.client.request(
+                f"metering/getLatest?from=.meters({self.device.dsuid})&type={series}&unit=Ws"
+            )
+            for reading in data.get("values", []):
+                if (
+                    reading.get("dSUID") == self.device.dsuid
+                    or reading.get("dsid") == self.device.dsid
+                ):
+                    return reading.get("value")
+            return None
         if self.index == "power":
             # Unit: Watt
             data = await self.device.client.request(

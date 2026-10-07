@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
+from datetime import timedelta
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
@@ -14,9 +16,15 @@ from homeassistant.const import (
     Platform,
 )
 from homeassistant.core import CoreState, HomeAssistant
-from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
+from homeassistant.exceptions import (
+    ConfigEntryAuthFailed,
+    ConfigEntryNotReady,
+    HomeAssistantError,
+)
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers import entity_registry as er
+from homeassistant.helpers.entity_component import async_update_entity
 from homeassistant.helpers.event import async_track_time_interval
 
 from .api.apartment import DigitalstromApartment
@@ -56,6 +64,31 @@ async def async_setup(hass: HomeAssistantType, config: ConfigType) -> bool:
     return True
 
 
+async def async_refresh_device_availability(hass, entry, apartment) -> None:
+    """Reconcile cached availability with the server's device inventory."""
+    data = await apartment.client.request("apartment/getDevices")
+    changed = set()
+    for item in data:
+        dsuid = item.get("dSUID")
+        present = item.get("isPresent")
+        device = apartment.devices.get(dsuid)
+        if device is not None and type(present) is bool and device.available != present:
+            device.availability_callback(present)
+            changed.add(dsuid)
+
+    registry = er.async_get(hass)
+    for entity in er.async_entries_for_config_entry(registry, entry.entry_id):
+        if entity.disabled_by is not None:
+            continue
+        dsuid = entity.unique_id.split("_", 1)[0]
+        device = apartment.devices.get(dsuid)
+        state = hass.states.get(entity.entity_id)
+        if device is None or state is None:
+            continue
+        if dsuid in changed or (state.state != "unavailable") != device.available:
+            await async_update_entity(hass, entity.entity_id)
+
+
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up digitalSTROM from a config entry."""
 
@@ -83,6 +116,25 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         raise ConfigEntryNotReady(ex) from ex
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+
+    availability_lock = asyncio.Lock()
+
+    async def refresh_availability(now):
+        if availability_lock.locked():
+            return
+        async with availability_lock:
+            try:
+                async with asyncio.timeout(30):
+                    await async_refresh_device_availability(hass, entry, apartment)
+            except (
+                CannotConnect, InvalidAuth, InvalidCertificate, ServerError,
+                HomeAssistantError, TimeoutError,
+            ) as err:
+                _LOGGER.warning("Could not refresh digitalSTROM availability: %s", err)
+
+    entry.async_on_unload(
+        async_track_time_interval(hass, refresh_availability, timedelta(minutes=1))
+    )
 
     async def start_watchdog(event=None):
         """Start websocket watchdog."""

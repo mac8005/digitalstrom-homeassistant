@@ -44,8 +44,8 @@ class DigitalstromDevice:
     def availability_callback(self, available: bool, call_parent: bool = False) -> None:
         if not self.available == available:
             self.available = available
-            if call_parent and (parent_device is not None):
-                parent_device.availability_callback(available)
+            if call_parent and self.parent_device not in [None, self]:
+                self.parent_device.availability_callback(available)
             for callback in self.availability_callbacks:
                 callback(available)
 
