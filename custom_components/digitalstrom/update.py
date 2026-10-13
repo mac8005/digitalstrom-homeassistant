@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from datetime import timedelta
 from typing import Any
 
 from homeassistant.components.update import (
@@ -16,6 +17,8 @@ from .api.circuit import DigitalstromCircuit
 from .const import CONF_DSUID, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
+
+SCAN_INTERVAL = timedelta(hours=6)
 
 
 async def async_setup_entry(
@@ -39,7 +42,7 @@ class DigitalstromUpdateEntity(UpdateEntity):
         """Initialize the update entity."""
         self.circuit = circuit
         self._attr_unique_id: str = f"{self.circuit.dsuid}_firmware"
-        self.entity_id = f"{DOMAIN}.{self._attr_unique_id}"
+        self.entity_id = f"update.{self._attr_unique_id}"
         self._attr_name = "Firmware"
         self._attr_has_entity_name = True
         self._attr_device_class = UpdateDeviceClass.FIRMWARE

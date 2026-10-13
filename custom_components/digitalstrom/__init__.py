@@ -115,6 +115,24 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     except (CannotConnect, ServerError) as ex:
         raise ConfigEntryNotReady(ex) from ex
 
+    registry = dr.async_get(hass)
+    apartment.device_registry_ids = {}
+    apartment_device = registry.async_get_or_create(
+        config_entry_id=entry.entry_id,
+        identifiers={(DOMAIN, apartment.dsuid)},
+        name="Apartment", model="Apartment", manufacturer="digitalSTROM",
+    )
+    apartment.device_registry_ids[apartment.dsuid] = apartment_device.id
+    for circuit in apartment.circuits.values():
+        circuit_device = registry.async_get_or_create(
+            config_entry_id=entry.entry_id,
+            identifiers={(DOMAIN, circuit.dsuid)},
+            name=circuit.name, manufacturer=circuit.manufacturer,
+            model=circuit.hw_name, hw_version=circuit.hw_version,
+            sw_version=circuit.sw_version,
+        )
+        apartment.device_registry_ids[circuit.dsuid] = circuit_device.id
+
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
     availability_lock = asyncio.Lock()

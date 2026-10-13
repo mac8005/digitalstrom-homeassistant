@@ -23,10 +23,11 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
     DataUpdateCoordinator,
+    UpdateFailed,
 )
 
 from .api.apartment import DigitalstromApartment
-from .api.exceptions import InvalidAuth
+from .api.exceptions import CannotConnect, InvalidAuth, ServerError
 from .api.zone import DigitalstromZone
 from .const import CONF_DSUID, DOMAIN
 
@@ -76,8 +77,10 @@ async def async_setup_entry(
     """Set up the climate platform."""
     client = hass.data[DOMAIN][config_entry.data[CONF_DSUID]]["client"]
     apartment = hass.data[DOMAIN][config_entry.data[CONF_DSUID]]["apartment"]
+    if not any(zone.climate_control_mode == 1 for zone in apartment.zones.values()):
+        return
     coordinator = DigitalstromClimateCoordinator(hass, apartment)
-    await coordinator.async_config_entry_first_refresh()
+    await coordinator.async_refresh()
     climate_entities = []
     for zone in apartment.zones.values():
         if zone.climate_control_mode == 1:
@@ -109,6 +112,8 @@ class DigitalstromClimateCoordinator(DataUpdateCoordinator):
                 await self.apartment.get_zone_climate_data()
         except InvalidAuth as err:
             raise ConfigEntryAuthFailed from err
+        except (CannotConnect, ServerError) as err:
+            raise UpdateFailed(str(err)) from err
 
 
 class DigitalstromClimateEntity(CoordinatorEntity, ClimateEntity):
@@ -122,7 +127,7 @@ class DigitalstromClimateEntity(CoordinatorEntity, ClimateEntity):
         self._attr_unique_id: str = (
             f"{self.zone.apartment.dsuid}_zone{self.zone.zone_id}_climate"
         )
-        self.entity_id = f"{DOMAIN}.{self.zone.apartment.dsuid}_zone{self.zone.zone_id}"
+        self.entity_id = f"climate.{self.zone.apartment.dsuid}_zone{self.zone.zone_id}"
         self._attr_temperature_unit = UnitOfTemperature.CELSIUS
         self._attr_max_temp = 35
         self._attr_min_temp = 3
@@ -286,5 +291,5 @@ class DigitalstromClimateEntity(CoordinatorEntity, ClimateEntity):
             model="Zone",
             manufacturer="digitalSTROM",
             suggested_area=self.zone.name,
-            via_device=(DOMAIN, self.zone.apartment.dsuid),
+            via_device_id=self.zone.apartment.device_registry_ids[self.zone.apartment.dsuid],
         )

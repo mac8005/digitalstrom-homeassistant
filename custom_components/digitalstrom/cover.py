@@ -83,7 +83,7 @@ class DigitalstromCover(CoverEntity, DigitalstromEntity):
         self.client = self.device.client
         self._attr_should_poll = True
         self.last_tilt = None
-        self.entity_id = f"{DOMAIN}.{self.device.dsuid}_{position_channel.index}"
+        self.entity_id = f"cover.{self.device.dsuid}_{position_channel.index}"
         self._attr_name = self.device.name
         if position_channel.channel_type == "shadePositionIndoor":
             self._attr_name += " Indoor Cover"

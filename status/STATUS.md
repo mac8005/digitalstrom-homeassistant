@@ -1,8 +1,8 @@
 # Status
-Updated: 2026-10-09
+Updated: 2026-10-13
 
 ## In flight
-- No pending software deployment. Real household operation remains the final acceptance check.
+- v0.0.13.2 compatibility/polling update prepared: twenty focused regressions and installed HA platform imports pass. Native entity-constructor checks are running. HACS release/deployment verification pending.
 
 ## Decisions
 - Release v0.0.13.1 is based on stable upstream v0.0.13, with availability recovery, parent callback, scene identity and consumption-only metering fixes.
@@ -20,6 +20,7 @@ Updated: 2026-10-09
 - Release v0.0.13.1 remains pinned to its tested source commit; subsequent status-only commits do not change it.
 
 ## Log
+- 2026-10-13: Prepared HA compatibility fixes for entity domains, parent registry IDs, button group and ppm units; removed redundant climate polling and bounded firmware polling to six hours. Twenty regressions and native imports pass; deployment pending.
 - 2026-10-09: Physical switching was confirmed despite native absent status. Do not equate isPresent=false with inability to receive group commands; direct output/presence queries timed out, cause remains unproven.
 - 2026-10-09: Authorized native server reboot completed; all circuits ready and native inventory returned to 55/57 present. Existing absence persists. Missing targetValue caches after reboot can yield unknown HA light state despite a valid direct output read; no source change in this task.
 - 2026-10-09: Read-only recurrence check: 134 entity availability states match native presence; all 28 package files match v0.0.13.1. Two native device entries absent, all four circuits present. No software change justified.

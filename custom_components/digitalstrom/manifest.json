@@ -22,7 +22,7 @@
       "manufacturer": "aizo ag"
     }
   ],
-  "version": "0.0.13.1",
+  "version": "0.0.13.2",
   "zeroconf": [
     "_dssweb._tcp.local."
   ]

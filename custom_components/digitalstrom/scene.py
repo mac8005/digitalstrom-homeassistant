@@ -151,5 +151,5 @@ class DigitalstromZoneSceneEntity(SceneEntity):
             model="Zone",
             manufacturer="digitalSTROM",
             suggested_area=self.scene.zone.name,
-            via_device=(DOMAIN, self.scene.zone.apartment.dsuid),
+            via_device_id=self.scene.zone.apartment.device_registry_ids[self.scene.zone.apartment.dsuid],
         )

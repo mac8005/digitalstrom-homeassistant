@@ -8,7 +8,6 @@ from homeassistant.components.sensor import (
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
-    CONCENTRATION_PARTS_PER_MILLION,
     DEGREE,
     LIGHT_LUX,
     PERCENTAGE,
@@ -19,6 +18,7 @@ from homeassistant.const import (
     UnitOfMass,
     UnitOfPower,
     UnitOfPressure,
+    UnitOfRatio,
     UnitOfSoundPressure,
     UnitOfSpeed,
     UnitOfTemperature,
@@ -167,7 +167,7 @@ SENSORS_MAP: dict[int, SensorEntityDescription] = {
         key="21",
         name="Room Carbon Dioxide Concentration",
         translation_key="room_carbon_dioxide_concentration",
-        native_unit_of_measurement=CONCENTRATION_PARTS_PER_MILLION,
+        native_unit_of_measurement=UnitOfRatio.PARTS_PER_MILLION,
         device_class=SensorDeviceClass.CO2,
         state_class=SensorStateClass.MEASUREMENT,
     ),
@@ -175,7 +175,7 @@ SENSORS_MAP: dict[int, SensorEntityDescription] = {
         key="22",
         name="Room Carbon Monoxide Concentration",
         translation_key="room_carbon_monoxide_concentration",
-        native_unit_of_measurement=CONCENTRATION_PARTS_PER_MILLION,
+        native_unit_of_measurement=UnitOfRatio.PARTS_PER_MILLION,
         device_class=SensorDeviceClass.CO,
         state_class=SensorStateClass.MEASUREMENT,
     ),
@@ -346,7 +346,7 @@ class DigitalstromSensor(SensorEntity, DigitalstromEntity):
         self.index = sensor_channel.index
         self.set_type(sensor_channel.sensor_type)
         self._attr_suggested_display_precision = 1
-        self.entity_id = f"{DOMAIN}.{self.device.dsuid}_{self.index}"
+        self.entity_id = f"sensor.{self.device.dsuid}_{self.index}"
 
     def set_type(self, sensor_type: int) -> None:
         self.sensor_type = sensor_type
@@ -394,12 +394,12 @@ class DigitalstromMeterSensor(SensorEntity):
         self.channel = sensor_channel
         self.circuit = sensor_channel.device
         self._attr_unique_id: str = f"{self.circuit.dsuid}_{self.channel.index}"
-        self.entity_id = f"{DOMAIN}.{self._attr_unique_id}"
+        self.entity_id = f"sensor.{self._attr_unique_id}"
         self._attr_should_poll = True
         self._has_state = False
         self._attributes: dict[str, Any] = {}
         self._state: int | None = None
-        self.entity_id = f"{DOMAIN}.{self.circuit.dsuid}_{self.channel.index}"
+        self.entity_id = f"sensor.{self.circuit.dsuid}_{self.channel.index}"
         self._state = None
         self._attr_has_entity_name = True
 
