@@ -2,11 +2,11 @@
 Updated: 2026-10-13
 
 ## In flight
-- v0.0.13.2 installed and verified after restart: package hashes, 397 registry identities/device links, 181 enabled available entities, no compatibility warnings. v0.0.13.3 follow-up discovery exception fix prepared; all 23 regressions pass. Final HACS install/restart verification pending.
+- No pending software deployment. v0.0.13.3 is installed through HACS and verified after restart; physical operation and intermittent native connectivity remain separate acceptance checks. [Release verification](2026-10-13-compatibility.md).
 
 ## Decisions
 - Release v0.0.13.1 is based on stable upstream v0.0.13, with availability recovery, parent callback, scene identity and consumption-only metering fixes.
-- HACS now installs this fork; all 28 installed package files matched the release before a successful Home Assistant restart. Integration loaded and authoritative presence reconciliation verified.
+- HACS installs v0.0.13.3; all 28 files match source, 397 registered entity IDs/device links preserved, 181 enabled entities currently available. Twenty-three regressions, native imports/constructors and core validation pass.
 - Preserve the digitalstrom integration domain and entity identifiers to retain existing HA configuration.
 - Keep household configuration, identifiers and credentials outside this repository.
 
@@ -17,9 +17,10 @@ Updated: 2026-10-13
 
 ## Gotchas
 - Software availability recovery does not repair devices genuinely absent from the digitalSTROM bus.
-- Release v0.0.13.1 remains pinned to its tested source commit; subsequent status-only commits do not change it.
+- Release v0.0.13.3 is pinned to source 1d5a294; subsequent status-only commits do not change it.
 
 ## Log
+- 2026-10-13: Published/installed v0.0.13.3 and verified RUNNING/loaded, all package hashes, unchanged 397 registry links, 181 available enabled entities, zero compatibility/discovery errors and valid core config; global repair list empty.
 - 2026-10-13: Verified v0.0.13.2 deployment and unchanged registry identities; final startup trace exposed duplicate-discovery disconnect. Prepared v0.0.13.3 with three new passing discovery regressions; deployment pending.
 - 2026-10-13: Prepared HA compatibility fixes for entity domains, parent registry IDs, button group and ppm units; removed redundant climate polling and bounded firmware polling to six hours. Twenty regressions and native imports pass; deployment pending.
 - 2026-10-09: Physical switching was confirmed despite native absent status. Do not equate isPresent=false with inability to receive group commands; direct output/presence queries timed out, cause remains unproven.
