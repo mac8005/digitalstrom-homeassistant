@@ -1,6 +1,7 @@
 {
     "config": {
         "abort": {
+            "cannot_connect": "Verbindung fehlgeschlagen",
             "already_configured": "Gerät ist bereits konfiguriert",
             "reauth_successful": "Erfolgreich neu konfiguriert"
         },

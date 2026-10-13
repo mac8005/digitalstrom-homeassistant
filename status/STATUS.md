@@ -2,7 +2,7 @@
 Updated: 2026-10-13
 
 ## In flight
-- v0.0.13.2 compatibility/polling update prepared: twenty focused regressions and installed HA platform imports pass. Native entity-constructor checks are running. HACS release/deployment verification pending.
+- v0.0.13.2 installed and verified after restart: package hashes, 397 registry identities/device links, 181 enabled available entities, no compatibility warnings. v0.0.13.3 follow-up discovery exception fix prepared; all 23 regressions pass. Final HACS install/restart verification pending.
 
 ## Decisions
 - Release v0.0.13.1 is based on stable upstream v0.0.13, with availability recovery, parent callback, scene identity and consumption-only metering fixes.
@@ -20,6 +20,7 @@ Updated: 2026-10-13
 - Release v0.0.13.1 remains pinned to its tested source commit; subsequent status-only commits do not change it.
 
 ## Log
+- 2026-10-13: Verified v0.0.13.2 deployment and unchanged registry identities; final startup trace exposed duplicate-discovery disconnect. Prepared v0.0.13.3 with three new passing discovery regressions; deployment pending.
 - 2026-10-13: Prepared HA compatibility fixes for entity domains, parent registry IDs, button group and ppm units; removed redundant climate polling and bounded firmware polling to six hours. Twenty regressions and native imports pass; deployment pending.
 - 2026-10-09: Physical switching was confirmed despite native absent status. Do not equate isPresent=false with inability to receive group commands; direct output/presence queries timed out, cause remains unproven.
 - 2026-10-09: Authorized native server reboot completed; all circuits ready and native inventory returned to 55/57 present. Existing absence persists. Missing targetValue caches after reboot can yield unknown HA light state despite a valid direct output read; no source change in this task.

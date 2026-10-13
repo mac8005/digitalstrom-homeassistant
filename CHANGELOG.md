@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.0.13.3 — 2026-10-13
+
+- Skip duplicate server discovery before making a network probe. Abort disconnected new-server discovery cleanly instead of raising an unhandled job exception.
+- Includes all compatibility and polling improvements from 0.0.13.2.
+
 ## 0.0.13.2 — 2026-10-13
 
 - Use platform-correct entity IDs while retaining existing unique IDs and registered entities.

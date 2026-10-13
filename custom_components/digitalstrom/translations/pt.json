@@ -1,6 +1,7 @@
 {
     "config": {
         "abort": {
+            "cannot_connect": "Falha na ligação",
             "already_configured": "Equipamento já configurado"
         },
         "error": {

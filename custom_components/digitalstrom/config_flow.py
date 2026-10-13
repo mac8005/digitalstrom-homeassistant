@@ -185,10 +185,14 @@ class DigitalstromConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def async_step_discovery_(self) -> FlowResult:
         """Handle discovery."""
+        self._async_abort_entries_match({CONF_HOST: self._host})
         client = DigitalstromClient(
             host=self._host, port=self._port, ssl=False, loop=self.hass.loop
         )
-        dsuid = await client.get_system_dsuid()
+        try:
+            dsuid = await client.get_system_dsuid()
+        except CannotConnect:
+            return self.async_abort(reason="cannot_connect")
 
         await self.async_set_unique_id(dsuid)
         self._abort_if_unique_id_configured(updates={CONF_HOST: self._host})
