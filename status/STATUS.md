@@ -2,7 +2,7 @@
 Updated: 2026-10-23
 
 ## In flight
-- No pending software deployment. v0.0.13.3 is installed through HACS and verified after restart; physical operation and intermittent native connectivity remain separate acceptance checks. [Release verification](2026-10-13-compatibility.md).
+- Optimizing repeated cached output and metering reads; v0.0.13.3 remains installed. Live HA 2026.10.2 RUNNING/loaded with 397 registered and 181 enabled entities. Batch property/query2 support verified; implementation and regressions in progress.
 
 ## Decisions
 - Keep v0.0.13.3 after reviewing separate Woon IoT v4.2.5: zone identities, missing light colour/blind tilt controls and Pro gating make this a migration, not an update. [Comparison](2026-10-23-wooniot-comparison.md).
@@ -21,6 +21,7 @@ Updated: 2026-10-23
 - Release v0.0.13.3 is pinned to source 1d5a294; subsequent status-only commits do not change it.
 
 ## Log
+- 2026-10-23: Authorized traffic optimization; recovered authenticated HA access and verified v0.0.13.3. Output reads are already cache-served and device sensors event-driven; plan shared output/meter snapshots without adding bus polls.
 - 2026-10-23: Compared Woon IoT v4.2.5 source/release with maintained fork; recommend retaining current version. Live HA SSH authentication denied; no runtime verification or deployment performed.
 - 2026-10-13: Published/installed v0.0.13.3 and verified RUNNING/loaded, all package hashes, unchanged 397 registry links, 181 available enabled entities, zero compatibility/discovery errors and valid core config; global repair list empty.
 - 2026-10-13: Verified v0.0.13.2 deployment and unchanged registry identities; final startup trace exposed duplicate-discovery disconnect. Prepared v0.0.13.3 with three new passing discovery regressions; deployment pending.
