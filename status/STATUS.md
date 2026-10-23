@@ -2,9 +2,10 @@
 Updated: 2026-10-23
 
 ## In flight
-- Optimizing repeated cached output and metering reads; v0.0.13.3 remains installed. Live HA 2026.10.2 RUNNING/loaded with 397 registered and 181 enabled entities. Batch property/query2 support verified; implementation and regressions in progress.
+- v0.0.13.4 cached-polling optimization validated; release/deployment in progress. [Design and measured comparison](2026-10-23-polling.md).
 
 ## Decisions
+- Batch server-cache output/meter reads for five seconds; invalidate outputs after commands, bound shared reads and failures, preserve all entity/control identities. No physical bus reduction claimed.
 - Keep v0.0.13.3 after reviewing separate Woon IoT v4.2.5: zone identities, missing light colour/blind tilt controls and Pro gating make this a migration, not an update. [Comparison](2026-10-23-wooniot-comparison.md).
 - Release v0.0.13.1 is based on stable upstream v0.0.13, with availability recovery, parent callback, scene identity and consumption-only metering fixes.
 - HACS installs v0.0.13.3; all 28 files match source, 397 registered entity IDs/device links preserved, 181 enabled entities currently available. Twenty-three regressions, native imports/constructors and core validation pass.
@@ -21,6 +22,7 @@ Updated: 2026-10-23
 - Release v0.0.13.3 is pinned to source 1d5a294; subsequent status-only commits do not change it.
 
 ## Log
+- 2026-10-23: Prepared v0.0.13.4: 34 regressions pass natively; live output equivalence 28/28, HTTP sweep 36 to 3 calls, four energy counters match. Deployment pending.
 - 2026-10-23: Authorized traffic optimization; recovered authenticated HA access and verified v0.0.13.3. Output reads are already cache-served and device sensors event-driven; plan shared output/meter snapshots without adding bus polls.
 - 2026-10-23: Compared Woon IoT v4.2.5 source/release with maintained fork; recommend retaining current version. Live HA SSH authentication denied; no runtime verification or deployment performed.
 - 2026-10-13: Published/installed v0.0.13.3 and verified RUNNING/loaded, all package hashes, unchanged 397 registry links, 181 available enabled entities, zero compatibility/discovery errors and valid core config; global repair list empty.

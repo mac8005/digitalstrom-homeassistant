@@ -33,7 +33,6 @@ class DigitalstromDevice:
         self.parent_device = None
         self.available = False
         self.availability_callbacks = []
-        self.reading_power_state_unsupported = False
         self.unique_device_names = []
 
     def get_parent(self) -> Self:
@@ -74,16 +73,12 @@ class DigitalstromDevice:
         )
 
     async def get_power_state(self) -> int:
-        if self.reading_power_state_unsupported:
-            return None
         try:
-            result = await self.client.request(
-                f"property/getFloating?path=/apartment/zones/zone{self.zone_id}/devices/{self.dsuid}/status/outputs/powerState/targetValue"
+            return await self.client.get_output_value(
+                self.zone_id, self.dsuid, "powerState"
             )
-            return result.get("value", None)
         except ServerError:
-            self.reading_power_state_unsupported = True
-        return None
+            return None
 
     async def call_scene(self, scene: int, force: bool = False) -> None:
         force_str = "&force=true" if force else ""

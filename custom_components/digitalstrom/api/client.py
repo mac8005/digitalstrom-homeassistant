@@ -17,6 +17,18 @@ from .exceptions import (
     ServerError,
 )
 
+OUTPUT_QUERY = (
+    "property/query2?query=/apartment/zones/*(ZoneID)"
+    "/devices/*(dSUID)/status/outputs/*(targetValue)"
+)
+SNAPSHOT_SECONDS = 5
+OUTPUT_COMMANDS = {
+    "device/setOutputChannelValue",
+    "device/callScene", "device/undoScene",
+    "zone/callScene", "zone/undoScene",
+    "apartment/callScene", "apartment/undoScene",
+}
+
 
 class DigitalstromClient:
     def __init__(
@@ -40,6 +52,8 @@ class DigitalstromClient:
         self._session_token = None
         self._ws = None
         self._event_callbacks = []
+        self._snapshots = {}
+        self._snapshot_locks = {}
         if type(ssl) is bool:
             self.ssl = None if ssl else False
         elif type(ssl) is str:
@@ -138,6 +152,17 @@ class DigitalstromClient:
         return data["dSUID"]
 
     async def request(self, url: str) -> dict:
+        if url.split("?", 1)[0] in OUTPUT_COMMANDS:
+            lock = self._snapshot_locks.setdefault(OUTPUT_QUERY, asyncio.Lock())
+            async with lock:
+                try:
+                    return await self._request_authenticated(url)
+                finally:
+                    # Also invalidate after an uncertain command result.
+                    self._snapshots.pop(OUTPUT_QUERY, None)
+        return await self._request_authenticated(url)
+
+    async def _request_authenticated(self, url: str) -> dict:
         # Send an authenticated request to the server
         # Previous login via request_app_token or set_app_token is required
         if (self.last_request is None) or (
@@ -147,6 +172,38 @@ class DigitalstromClient:
         data = await self._request_raw(url, dict(token=self._session_token))
         self.last_request = time.time()
         return data
+
+    async def _request_snapshot(self, url: str) -> dict:
+        """Share a short-lived server-cache read across polling entities."""
+        lock = self._snapshot_locks.setdefault(url, asyncio.Lock())
+        async with lock:
+            cached = self._snapshots.get(url)
+            if cached is not None and time.monotonic() - cached[0] < SNAPSHOT_SECONDS:
+                _, data, error = cached
+                if error is not None:
+                    raise error
+                return data
+            try:
+                async with asyncio.timeout(5):
+                    data = await self.request(url)
+            except (CannotConnect, InvalidAuth, InvalidCertificate, ServerError, TimeoutError) as err:
+                # A failed shared read must not turn into one retry per entity.
+                self._snapshots[url] = (time.monotonic(), None, err)
+                raise
+            self._snapshots[url] = (time.monotonic(), data, None)
+            return data
+
+    async def get_output_value(self, zone_id: int, dsuid: str, channel_id: str) -> float | None:
+        data = await self._request_snapshot(OUTPUT_QUERY)
+        return (
+            data.get(f"zone{zone_id}", {}).get(dsuid, {})
+            .get(channel_id, {}).get("targetValue")
+        )
+
+    async def get_metering_values(self, series: str) -> dict:
+        return await self._request_snapshot(
+            f"metering/getLatest?from=.meters(all)&type={series}&unit=Ws"
+        )
 
     def register_event_callback(self, callback: callable) -> None:
         # Register an event callback

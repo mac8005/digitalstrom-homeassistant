@@ -63,10 +63,9 @@ class DigitalstromOutputChannel(DigitalstromChannel):
 
     async def get_value(self) -> float:
         try:
-            result = await self.device.client.request(
-                f"property/getFloating?path=/apartment/zones/zone{self.device.zone_id}/devices/{self.device.dsuid}/status/outputs/{self.channel_id}/targetValue"
+            self.last_value = await self.device.client.get_output_value(
+                self.device.zone_id, self.device.dsuid, self.channel_id
             )
-            self.last_value = result.get("value", None)
         except ServerError:
             self.last_value = None
         return self.last_value
@@ -95,9 +94,7 @@ class DigitalstromMeterSensorChannel(DigitalstromChannel):
             return None
         if not self.device.has_metering_producer and self.index in ["power", "energy"]:
             series = "consumption" if self.index == "power" else "energy"
-            data = await self.device.client.request(
-                f"metering/getLatest?from=.meters({self.device.dsuid})&type={series}&unit=Ws"
-            )
+            data = await self.device.client.get_metering_values(series)
             for reading in data.get("values", []):
                 if (
                     reading.get("dSUID") == self.device.dsuid

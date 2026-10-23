@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.0.13.4 — 2026-10-23
+
+- Share one dSS cached-output snapshot across individual lights, blinds and switches for up to five seconds, replacing repeated per-channel HTTP reads. Position, tilt, colour controls and entity identifiers are preserved.
+- Batch consumption-only circuit power/energy reads across meters, keeping missing readings unknown and preserving producer-meter semantics.
+- Invalidate output snapshots after commands, including failed commands; serialize overlapping reads/writes and briefly share read failures to avoid retry bursts.
+- These changes reduce dSS HTTP requests. Device sensor readings already use events and output polling already reads the server cache; no reduction in measured physical bus traffic is claimed. Firmware checks remain every six hours.
+
 ## 0.0.13.3 — 2026-10-13
 
 - Skip duplicate server discovery before making a network probe. Abort disconnected new-server discovery cleanly instead of raising an unhandled job exception.

@@ -15,19 +15,21 @@ Channel = scope['DigitalstromMeterSensorChannel']
 
 class Metering(unittest.IsolatedAsyncioTestCase):
     def channel(self, index, result, producer=False, metering=True):
-        client = types.SimpleNamespace(request=AsyncMock(return_value=result))
+        client = types.SimpleNamespace(request=AsyncMock(return_value=result), get_metering_values=AsyncMock(return_value=result))
         device = types.SimpleNamespace(dsuid='meter-uid', dsid='meter-id', has_metering=metering, has_metering_producer=producer, client=client)
         return Channel(device, index), client
 
     async def test_consumption_counter_preserves_watt_seconds(self):
         c, client = self.channel('energy', {'values': [{'dSUID': 'meter-uid', 'value': 4381741728}]})
         self.assertEqual(await c.get_value(), 4381741728)
-        client.request.assert_awaited_once_with('metering/getLatest?from=.meters(meter-uid)&type=energy&unit=Ws')
+        client.get_metering_values.assert_awaited_once_with('energy')
+        client.request.assert_not_awaited()
 
     async def test_power_accepts_real_zero_and_legacy_identifier(self):
         c, client = self.channel('power', {'values': [{'dsid': 'meter-id', 'value': 0}]})
         self.assertEqual(await c.get_value(), 0)
-        self.assertIn('type=consumption', client.request.call_args.args[0])
+        client.get_metering_values.assert_awaited_once_with('consumption')
+        client.request.assert_not_awaited()
 
     async def test_missing_meter_never_becomes_zero_or_another_meter(self):
         for data in [{}, {'values': []}, {'values': [{'dSUID': 'other', 'value': 50}]}]:
@@ -48,5 +50,6 @@ class Metering(unittest.IsolatedAsyncioTestCase):
         c, client = self.channel('power', {}, metering=False)
         self.assertIsNone(await c.get_value())
         client.request.assert_not_awaited()
+        client.get_metering_values.assert_not_awaited()
 
 unittest.main()
