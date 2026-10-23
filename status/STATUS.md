@@ -1,10 +1,11 @@
 # Status
-Updated: 2026-10-13
+Updated: 2026-10-23
 
 ## In flight
 - No pending software deployment. v0.0.13.3 is installed through HACS and verified after restart; physical operation and intermittent native connectivity remain separate acceptance checks. [Release verification](2026-10-13-compatibility.md).
 
 ## Decisions
+- Keep v0.0.13.3 after reviewing separate Woon IoT v4.2.5: zone identities, missing light colour/blind tilt controls and Pro gating make this a migration, not an update. [Comparison](2026-10-23-wooniot-comparison.md).
 - Release v0.0.13.1 is based on stable upstream v0.0.13, with availability recovery, parent callback, scene identity and consumption-only metering fixes.
 - HACS installs v0.0.13.3; all 28 files match source, 397 registered entity IDs/device links preserved, 181 enabled entities currently available. Twenty-three regressions, native imports/constructors and core validation pass.
 - Preserve the digitalstrom integration domain and entity identifiers to retain existing HA configuration.
@@ -20,6 +21,7 @@ Updated: 2026-10-13
 - Release v0.0.13.3 is pinned to source 1d5a294; subsequent status-only commits do not change it.
 
 ## Log
+- 2026-10-23: Compared Woon IoT v4.2.5 source/release with maintained fork; recommend retaining current version. Live HA SSH authentication denied; no runtime verification or deployment performed.
 - 2026-10-13: Published/installed v0.0.13.3 and verified RUNNING/loaded, all package hashes, unchanged 397 registry links, 181 available enabled entities, zero compatibility/discovery errors and valid core config; global repair list empty.
 - 2026-10-13: Verified v0.0.13.2 deployment and unchanged registry identities; final startup trace exposed duplicate-discovery disconnect. Prepared v0.0.13.3 with three new passing discovery regressions; deployment pending.
 - 2026-10-13: Prepared HA compatibility fixes for entity domains, parent registry IDs, button group and ppm units; removed redundant climate polling and bounded firmware polling to six hours. Twenty regressions and native imports pass; deployment pending.
