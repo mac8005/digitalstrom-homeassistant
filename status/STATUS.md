@@ -19,9 +19,10 @@ Updated: 2026-10-23
 
 ## Gotchas
 - Software availability recovery does not repair devices genuinely absent from the digitalSTROM bus.
-- Release v0.0.13.4 is pinned to source d69f3e9; subsequent status-only commits do not change it. Startup snapshot timeouts recovered; settled 90-second container log clean.
+- Release v0.0.13.4 is pinned to source d69f3e9; subsequent status-only commits do not change it. Follow-up at 20:00 CEST confirmed active polling and 26 minutes without DigitalSTROM warnings/errors; 39 existing unavailable entities match native absence.
 
 ## Log
+- 2026-10-23: Follow-up log/state check: loaded v0.0.13.4, active output/meter polling, 26 minutes without warnings/errors, no new unavailable entities and zero native availability mismatches; no code changes or restart.
 - 2026-10-23: Published/installed v0.0.13.4; verified RUNNING/loaded, 28 matching files, unchanged 397 registry links and no newly unavailable entities. Startup timeouts recovered; settled 90-second log clean.
 - 2026-10-23: Prepared v0.0.13.4: 34 regressions pass natively; live output equivalence 28/28, HTTP sweep 36 to 3 calls, four energy counters match. Deployment pending.
 - 2026-10-23: Authorized traffic optimization; recovered authenticated HA access and verified v0.0.13.3. Output reads are already cache-served and device sensors event-driven; plan shared output/meter snapshots without adding bus polls.
