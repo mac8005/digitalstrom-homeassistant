@@ -1,5 +1,5 @@
 # Status
-Updated: 2026-10-23
+Updated: 2026-10-24
 
 ## In flight
 - No pending deployment. v0.0.13.4 is installed and loaded; observe normal household use and the existing native availability issues. [Optimization and verification](2026-10-23-polling.md).
@@ -22,6 +22,7 @@ Updated: 2026-10-23
 - Release v0.0.13.4 is pinned to source d69f3e9; subsequent status-only commits do not change it. Follow-up at 20:00 CEST confirmed active polling and 26 minutes without DigitalSTROM warnings/errors; 39 existing unavailable entities match native absence.
 
 ## Log
+- 2026-10-24: Meter D7 marked 13 devices absent again 10-23 09:41–10:39; Bad Spiegelschrank stayed on overnight because its HA entity was unavailable. Devices answer output reads again but stay absent; zone off scene reaches them. HA automation now uses the zone off scene; no integration change.
 - 2026-10-23: Follow-up log/state check: loaded v0.0.13.4, active output/meter polling, 26 minutes without warnings/errors, no new unavailable entities and zero native availability mismatches; no code changes or restart.
 - 2026-10-23: Published/installed v0.0.13.4; verified RUNNING/loaded, 28 matching files, unchanged 397 registry links and no newly unavailable entities. Startup timeouts recovered; settled 90-second log clean.
 - 2026-10-23: Prepared v0.0.13.4: 34 regressions pass natively; live output equivalence 28/28, HTTP sweep 36 to 3 calls, four energy counters match. Deployment pending.
