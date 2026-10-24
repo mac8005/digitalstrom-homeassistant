@@ -18,10 +18,12 @@ Updated: 2026-10-24
 3. Review later upstream changes before rebasing the maintained branch.
 
 ## Gotchas
+- Native absent devices still switch via zone scenes; HA skips service calls to their unavailable entities. Zone scene values differ per room (Bad preset 1 turns the Spot off).
 - Software availability recovery does not repair devices genuinely absent from the digitalSTROM bus.
 - Release v0.0.13.4 is pinned to source d69f3e9; subsequent status-only commits do not change it. Follow-up at 20:00 CEST confirmed active polling and 26 minutes without DigitalSTROM warnings/errors; 39 existing unavailable entities match native absence.
 
 ## Log
+- 2026-10-24: D7 circuit rescan left 4/19 devices present although all answer output reads; breaker power-cycle or installer still required. HA room automations for Bad, Kleiderzimmer and Dusche now fall back to zone scenes while a lamp is unavailable. No integration change.
 - 2026-10-24: Meter D7 marked 13 devices absent again 10-23 09:41–10:39; Bad Spiegelschrank stayed on overnight because its HA entity was unavailable. Devices answer output reads again but stay absent; zone off scene reaches them. HA automation now uses the zone off scene; no integration change.
 - 2026-10-23: Follow-up log/state check: loaded v0.0.13.4, active output/meter polling, 26 minutes without warnings/errors, no new unavailable entities and zero native availability mismatches; no code changes or restart.
 - 2026-10-23: Published/installed v0.0.13.4; verified RUNNING/loaded, 28 matching files, unchanged 397 registry links and no newly unavailable entities. Startup timeouts recovered; settled 90-second log clean.
